@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow
-from components.menu import MenuBar
+from components import MenuBar
 from config import SCREEN_SIZE
 from store import User
 from utils import router
