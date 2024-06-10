@@ -1,2 +1,5 @@
 PROJECT_NAME = "光影智选"
 SCREEN_SIZE = {"width": 1707, "height": 1067}
+SERVER_HOST = "127.0.0.1"
+SERVER_PORT = 4523
+SERVER_BASE_URL = "/m1/4537752-0-default"

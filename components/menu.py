@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMenuBar
-from PySide6.QtCore import Signal
+from utils import router
 
 menuBar_style = """
     QMenuBar {
@@ -20,11 +20,6 @@ menuBar_style = """
 """
 
 class MenuBar(QMenuBar):
-    loginSignal = Signal()
-    signupSignal = Signal()
-    movieSignal = Signal()
-    settingSignal = Signal()
-
     def __init__(self):
         super().__init__()
         self.setStyleSheet(menuBar_style)
@@ -32,19 +27,19 @@ class MenuBar(QMenuBar):
         self.setNativeMenuBar(False)
         self.menuList = {}
         self.menuList["user"] = self.addMenu("用户")
-        self.menuList["user"].addAction("登录", self.login)
-        self.menuList["user"].addAction("注册", self.signup)
-        self.menuList["movie"] = self.addAction("影评", self.movie)
-        self.menuList["setting"] = self.addAction("设置", self.setting)
+        self.menuList["user"].addAction("登录", self.loginPage)
+        self.menuList["user"].addAction("注册", self.signupPage)
+        self.menuList["movie"] = self.addAction("影评", self.moviePage)
+        self.menuList["admin"] = self.addAction("管理员模式", self.adminPage)
 
-    def login(self):
-        self.loginSignal.emit()
+    def loginPage(self):
+        router.navigate('/login')
 
-    def signup(self):
-        self.signupSignal.emit()
+    def signupPage(self):
+        router.navigate('/signup')
     
-    def movie(self):
-        self.movieSignal.emit()
-    
-    def setting(self):
-        self.settingSignal.emit()
+    def moviePage(self):
+        router.navigate('/movie')
+
+    def adminPage(self):
+        router.navigate('/admin')
