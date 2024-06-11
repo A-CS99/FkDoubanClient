@@ -9,7 +9,7 @@ class LoginWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.user = User()
-        self.user.loginSignal.connect(self.update)
+        self.user.logChangeSignal.connect(self.update)
             
         title_label = QLabel("登录")
         title_label.setAlignment(Qt.AlignCenter)
@@ -26,7 +26,6 @@ class LoginWidget(QWidget):
         button_layout.addWidget(submit_button)
         button_widget.setLayout(button_layout)
         
-
         self.phone_input = InputWidget("手机号", "请输入手机号")
         self.password_input = InputWidget("密码", "请输入密码")
         

@@ -17,7 +17,7 @@ class UserError(Enum):
 
 @singleton
 class User(QObject):
-    loginSignal = Signal()
+    logChangeSignal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -66,6 +66,7 @@ class User(QObject):
         self.username = response['data']['username']
         self.phone = response['data']['phone']
         self.role = Role(response['data']['isAdmin'])
+        self.logChangeSignal.emit()
         return True, response['data']
     
     def logout(self):
@@ -74,6 +75,7 @@ class User(QObject):
         self.username = None
         self.phone = None
         self.role = None
+        self.logChangeSignal.emit()
     
     def register(self, username, phone, password):
         if not self.check_username(username):

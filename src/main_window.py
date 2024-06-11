@@ -3,7 +3,7 @@ from components import MenuBar
 from config import SCREEN_SIZE
 from store import User
 from utils import router
-from pages import LoginWidget, IndexWidget
+from pages import IndexWidget, LoginWidget, SignupWidget
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         router.bind_routes({
             '/': IndexWidget,
             '/login': LoginWidget,
-            '/signup': None,
+            '/signup': SignupWidget,
             '/movie': IndexWidget
         })
         router.navigateSignal.connect(self.onNavigate)
