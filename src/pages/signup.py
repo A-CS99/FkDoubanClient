@@ -16,6 +16,7 @@ class SignupWidget(QWidget):
 
         submit_button = QPushButton("确认")
         submit_button.setStyleSheet("font-size: 16px; background-color: #0078d4; color: #fff; border: none; border-radius: 5px;")
+        submit_button.setCursor(Qt.PointingHandCursor)
         submit_button.setFixedHeight(40)
         submit_button.setFixedWidth(100)
         submit_button.clicked.connect(self.submit)
@@ -63,4 +64,6 @@ class SignupWidget(QWidget):
                 self.phone_input.alert("手机号格式错误")
             elif res == UserError.PASSWORD_FORMAT_ERROR:
                 self.password_input.alert("密码格式错误")
+            elif res == UserError.USER_EXIST:
+                self.user_input.alert("用户名已存在")
         self.update()

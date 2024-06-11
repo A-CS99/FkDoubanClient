@@ -3,7 +3,7 @@ from components import MenuBar
 from config import SCREEN_SIZE
 from store import User
 from utils import router
-from pages import IndexWidget, LoginWidget, SignupWidget
+from pages import IndexWidget, LoginWidget, SignupWidget, InfoWidget, RenameWidget, RePwdWidget
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -16,9 +16,12 @@ class MainWindow(QMainWindow):
         self.setStyleSheet("background-color: #fff;")
         router.bind_routes({
             '/': IndexWidget,
+            '/movie': IndexWidget,
+            '/user': InfoWidget,
             '/login': LoginWidget,
             '/signup': SignupWidget,
-            '/movie': IndexWidget
+            '/rename': RenameWidget,
+            '/rePwd': RePwdWidget,
         })
         router.navigateSignal.connect(self.onNavigate)
         if self.user.is_login():

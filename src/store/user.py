@@ -122,6 +122,7 @@ class User(QObject):
         response = post('/user/modify/pwd', data)
         if response['code'] != 200:
             return False, UserError(response['code'])
+        self.logout()
         return True, response['data']
     
     def delete_user(self, id):
