@@ -3,7 +3,7 @@ from components import MenuBar
 from config import SCREEN_SIZE
 from store import User
 from utils import router
-from pages import IndexWidget, LoginWidget, SignupWidget, InfoWidget, RenameWidget, RePwdWidget
+from pages import IndexWidget, LoginWidget, SignupWidget, InfoWidget, RenameWidget, RePwdWidget, ManageWidget
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -22,6 +22,7 @@ class MainWindow(QMainWindow):
             '/signup': SignupWidget,
             '/rename': RenameWidget,
             '/rePwd': RePwdWidget,
+            '/admin': ManageWidget,
         })
         router.navigateSignal.connect(self.onNavigate)
         if self.user.is_login():

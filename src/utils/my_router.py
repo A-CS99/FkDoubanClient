@@ -18,8 +18,7 @@ class Router(QObject):
 
     def navigate(self, route):
         if route in self.routes:
-            if self.routes[route] is not self.curPage:
-                self.curPage = self.routes[route]()
+            self.curPage = self.routes[route]()
             self.navigateSignal.emit()
 
 router = Router()
