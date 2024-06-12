@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QScrollArea
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QScrollArea, QPushButton, QLineEdit, QComboBox
+from PySide6.QtCore import Qt, Signal
 from config import SCREEN_SIZE, MENU_HEIGHT
 from store import MovieList, User
 from components import CardWidget
@@ -8,7 +8,42 @@ HEADER_HEIGHT = 70
 FOOTER_HEIGHT = 50
 CONTENT_HEIGHT = SCREEN_SIZE["height"] - MENU_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT - 2 - 120
 
+class SearchWidget(QWidget):
+    searchSignal = Signal(str, str)
+    def __init__(self):
+        super().__init__()
+        self.user = User()
+        layout = QHBoxLayout()
+        layout.setAlignment(Qt.AlignRight)
+        self.setLayout(layout)
+
+        movie_list = MovieList()
+        search_options = movie_list.get_search_options()
+        self.search_combobox = QComboBox()
+        self.search_combobox.setFixedWidth(100)
+        for option in search_options:
+            self.search_combobox.addItem(option["label"], option["value"])
+        self.search_input = QLineEdit()
+        self.search_input.setFixedWidth(300)
+        search_button = QPushButton('搜索')
+        search_button.setFixedWidth(80)
+        search_button.clicked.connect(self.search)
+        if not self.user.is_login():
+            self.search_input.setPlaceholderText('请先登录')
+            self.search_input.setDisabled(True)
+            search_button.setDisabled(True)
+
+        layout.addWidget(self.search_combobox)
+        layout.addWidget(self.search_input)
+        layout.addWidget(search_button)
+
+    def search(self):
+        selected_type = self.search_combobox.currentData()
+        selected_text = self.search_input.text()
+        self.searchSignal.emit(selected_type, selected_text)
+
 class HeaderWidget(QWidget):
+    searchSignal = Signal(str, str)
     def __init__(self):
         super().__init__()
         self.setFixedHeight(HEADER_HEIGHT)
@@ -17,7 +52,11 @@ class HeaderWidget(QWidget):
 
         label = QLabel('PyDouban - 豆瓣电影 TOP250(桌面版)')
         label.setStyleSheet('font-size: 32px; font-weight: bold; margin-left: 10px; margin-bottom: 5px;')
+        search_widget = SearchWidget()
+        search_widget.searchSignal.connect(self.searchSignal.emit)
+
         layout.addWidget(label)
+        layout.addWidget(search_widget)
 
 class FooterWidget(QWidget):
     def __init__(self):
@@ -45,6 +84,7 @@ class ContentWidget(QWidget):
         super().__init__()
         self.movie_list = MovieList()
         self.setFixedHeight(CONTENT_HEIGHT)
+        self.is_searching = False
         
         self.user = User()
         if not self.user.is_login():
@@ -84,6 +124,8 @@ class ContentWidget(QWidget):
         layout.addWidget(self.scroll_area)
 
     def onScroll(self):
+        if self.is_searching:
+            return
         scroll_bar = self.scroll_area.verticalScrollBar()
         if scroll_bar.value() == scroll_bar.maximum():
             self.load_more()
@@ -107,6 +149,34 @@ class ContentWidget(QWidget):
                 row_layout.addWidget(card_widget)
                 row_index += 1
 
+    def search_show(self, type, text):
+        if not text:
+            self.search_hide()
+            return
+        self.is_searching = True
+        self.page = 1
+        self.scroll_area.takeWidget()
+        list_widget = QWidget()
+        list_layout = QVBoxLayout()
+        list_layout.setAlignment(Qt.AlignTop)
+        list_widget.setLayout(list_layout)
+        self.scroll_area.setWidget(list_widget)
+        movies = self.movie_list.search_movie(type, text)
+        for movie in movies:
+            card_widget = CardWidget(movie)
+            list_layout.addWidget(card_widget)
+
+    def search_hide(self):
+        self.is_searching = False
+        self.page = 1
+        self.scroll_area.takeWidget()
+        list_widget = QWidget()
+        list_layout = QVBoxLayout()
+        list_layout.setAlignment(Qt.AlignTop)
+        list_widget.setLayout(list_layout)
+        self.scroll_area.setWidget(list_widget)
+        self.load_more()
+
 class Divider(QLabel):
     def __init__(self):
         super().__init__()
@@ -120,9 +190,13 @@ class IndexWidget(QWidget):
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setAlignment(Qt.AlignTop)
-        layout.addWidget(HeaderWidget())
+        header = HeaderWidget()
+        content = ContentWidget()
+        header.searchSignal.connect(content.search_show)
+        footer = FooterWidget()
+        layout.addWidget(header)
         layout.addWidget(Divider())
-        layout.addWidget(ContentWidget())
+        layout.addWidget(content)
         layout.addWidget(Divider())
-        layout.addWidget(FooterWidget())
+        layout.addWidget(footer)
         self.setLayout(layout)
