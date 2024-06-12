@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QMenuBar
 from utils import router
 from store import User
+from config import MENU_HEIGHT
 
 menuBar_style = """
     QMenuBar {
@@ -26,7 +27,7 @@ class MenuBar(QMenuBar):
         self.user = User()
         self.user.logChangeSignal.connect(self.onLogChange)
         self.setStyleSheet(menuBar_style)
-        self.setFixedHeight(60)
+        self.setFixedHeight(MENU_HEIGHT)
         self.setNativeMenuBar(False)
         self.menuList = {}
         self.menuList["user"] = self.addMenu("用户")
