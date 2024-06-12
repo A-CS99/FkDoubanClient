@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.font_manager as fm
 from utils import get_image
+from urllib.parse import quote
+from config import SERVER_HOST, SERVER_PORT, SERVER_BASE_URL
 
 demo_movie = {
     "rank": 0,
@@ -33,6 +35,9 @@ class CoverLabel(QLabel):
         super().__init__()
         self.setFixedWidth(width)
         self.setFixedHeight(height)
+        img_path = quote(img_path)
+        if not img_path.startswith("http"):
+            img_path = f'http://{SERVER_HOST}:{SERVER_PORT}{SERVER_BASE_URL}{img_path}'
         image = get_image(img_path)
         pixmap = QPixmap()
         pixmap.loadFromData(image)
