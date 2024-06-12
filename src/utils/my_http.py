@@ -9,7 +9,7 @@ def get_image(image_url):
     conn.request('GET', url.path)
     response = conn.getresponse()
     image = response.read()
-    print(f'| GET | {image_url} | {response.status} | {len(image)}')
+    # print(f'| GET | {image_url} | {response.status} | {len(image)}')
     client.HTTPConnection.close(conn)
     return image
 
@@ -22,7 +22,7 @@ def get(url):
         "data": json.loads(response.read().decode("utf-8"))
     }
     client.HTTPConnection.close(conn)
-    print(f'| GET | {url} | {py_response}')
+    # print(f'| GET | {url} | {py_response}')
     return py_response
 
 def post(url, data):
@@ -35,7 +35,7 @@ def post(url, data):
         "data": json.loads(response.read().decode("utf-8"))
     }
     client.HTTPConnection.close(conn)
-    print(f'| POST | {url} | {py_response}')
+    # print(f'| POST | {url} | {py_response}')
     return py_response
 
 def delete(url):
@@ -47,7 +47,7 @@ def delete(url):
         "data": json.loads(response.read().decode("utf-8"))
     }
     client.HTTPConnection.close(conn)
-    print(f'| DELETE | {url} | {py_response}')
+    # print(f'| DELETE | {url} | {py_response}')
     return py_response
 
 def put(url):
@@ -59,5 +59,5 @@ def put(url):
         "data": json.loads(response.read().decode("utf-8"))
     }
     client.HTTPConnection.close(conn)
-    print(f'| PUT | {url} | {py_response}')
+    # print(f'| PUT | {url} | {py_response}')
     return py_response

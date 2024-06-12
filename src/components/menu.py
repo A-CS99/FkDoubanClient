@@ -62,6 +62,7 @@ class MenuBar(QMenuBar):
                 if "admin" in self.menuList:
                     self.menuList["admin"].deleteLater()
                     del self.menuList["admin"]
+                    self.update()
         else:
             self.menuList["user"].clear()
             self.menuList["user"].setTitle("用户")
