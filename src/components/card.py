@@ -1,6 +1,9 @@
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QDialog
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.font_manager as fm
 from utils import get_image
 
 demo_movie = {
@@ -206,21 +209,35 @@ class SideRatingWidget(QWidget):
         rating_widget = RatingWidget(rating)
         comments_user_label = QLabel(f"{comments_user}人参与评价")
         comments_user_label.setStyleSheet('font-size: 12px;')
-        star_ratio_label = QLabel(f"5星: {star_ratio[0]}% 4星: {star_ratio[1]}% 3星: {star_ratio[2]}% 2星: {star_ratio[3]}% 1星: {star_ratio[4]}%")
-        star_ratio_label.setStyleSheet('font-size: 14px;')
+        # 绘制横向柱状图
+        zh_font = fm.FontProperties(fname='src/assets/SIMHEI.ttf')
+        x = ['5星', '4星', '3星', '2星', '1星']
+        y = star_ratio
+        fig = plt.figure(figsize=(4, 2))
+        ax = fig.add_subplot(111)
+        bars = ax.barh(x, y, color='#ffac2d')
+        ax.set_yticklabels(x, fontproperties=zh_font)
+        # 在柱子顶部显示百分比值
+        for bar in bars:
+            width = bar.get_width()
+            ax.text(width, bar.get_y() + bar.get_height()/2, f'{width:.1%}', ha='left', va='center', color='black')
+        # 隐藏边框
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        canvas = FigureCanvas(fig)
 
         layout.addWidget(rating_widget)
         layout.addWidget(comments_user_label)
-        layout.addWidget(star_ratio_label)
+        layout.addWidget(canvas)
 
         self.setLayout(layout)
 
 class MovieDialog(QDialog):
     def __init__(self, movie=demo_movie):
         super().__init__()
-        self.setWindowTitle("电影详情")
-        self.setFixedWidth(1000)
-        self.setFixedHeight(1000)
+        self.setWindowTitle(f"电影详情 - {movie['name']}")
+        self.setFixedWidth(1100)
+        self.setFixedHeight(800)
         self.setStyleSheet('background-color: #fff;')
 
         layout = QVBoxLayout()

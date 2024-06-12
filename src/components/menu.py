@@ -34,7 +34,6 @@ class MenuBar(QMenuBar):
         self.menuList["user"].addAction("登录", self.loginPage)
         self.menuList["user"].addAction("注册", self.signupPage)
         self.menuList["movie"] = self.addAction("影评", self.moviePage)
-        self.menuList["admin"] = self.addAction("管理员模式", self.adminPage)
 
     def userPage(self):
         router.navigate('/user')
@@ -57,6 +56,12 @@ class MenuBar(QMenuBar):
             self.menuList["user"].setTitle(self.user.username)
             self.menuList["user"].addAction("个人信息", self.userPage)
             self.menuList["user"].addAction("退出登录", self.user.logout)
+            if self.user.is_admin():
+                self.menuList["admin"] = self.addAction("后台管理", self.adminPage)
+            else:
+                if "admin" in self.menuList:
+                    self.menuList["admin"].deleteLater()
+                    del self.menuList["admin"]
         else:
             self.menuList["user"].clear()
             self.menuList["user"].setTitle("用户")

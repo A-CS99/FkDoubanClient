@@ -49,6 +49,11 @@ class User(QObject):
     def is_login(self):
         return not self.not_login
     
+    def is_admin(self):
+        if self.not_login:
+            return False
+        return self.role == Role.ADMIN    
+    
     def login(self, phone, password):
         if not self.check_phone(phone):
             return False, UserError.PHONE_FORMAT_ERROR
@@ -139,7 +144,7 @@ class User(QObject):
         response = get('/user/all')
         if response['code'] != 200:
             return False, UserError(response['code'])
-        return True, response['data']
+        return True, response['data']['users']
     
     def add_admin(self, id):
         if self.role != Role.ADMIN:

@@ -50,9 +50,9 @@ def delete(url):
     print(f'| DELETE | {url} | {py_response}')
     return py_response
 
-def put(url, data):
+def put(url):
     conn = client.HTTPConnection(SERVER_HOST, SERVER_PORT)
-    conn.request('PUT', SERVER_BASE_URL + url, data_bytes, headers={"Content-Type": "application/json"})
+    conn.request('PUT', SERVER_BASE_URL + url)
     response = conn.getresponse()
     py_response = {
         "code": response.status,
