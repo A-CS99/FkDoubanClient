@@ -3,15 +3,15 @@ from enum import Enum
 from PySide6.QtCore import Signal, QObject
 
 class Role(Enum):
-    USER = 0
-    ADMIN = 1
+    USER = False
+    ADMIN = True
 
 class UserError(Enum):
     PHONE_FORMAT_ERROR = 100
     USERNAME_FORMAT_ERROR = 101
     PASSWORD_FORMAT_ERROR = 102
     NOT_ALLOWED = 103
-    PASSWORD_ERROR = 201
+    PASSWORD_ERROR = 400
     USER_NOT_FOUND = 404
     USER_EXIST = 403
 
@@ -50,9 +50,9 @@ class User(QObject):
         return not self.not_login
     
     def is_admin(self):
-        if self.not_login:
+        if not self.is_login():
             return False
-        return self.role == Role.ADMIN    
+        return self.role
     
     def login(self, phone, password):
         if not self.check_phone(phone):
@@ -144,7 +144,7 @@ class User(QObject):
         response = get('/user/all')
         if response['code'] != 200:
             return False, UserError(response['code'])
-        return True, response['data']['users']
+        return True, response['data']
     
     def add_admin(self, id):
         if self.role != Role.ADMIN:
