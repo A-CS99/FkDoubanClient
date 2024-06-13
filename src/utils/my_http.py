@@ -9,20 +9,26 @@ def get_image(image_url):
     conn.request('GET', url.path)
     response = conn.getresponse()
     image = response.read()
-    # print(f'| GET | {image_url} | {response.status} | {len(image)}')
+    print(f'| GET | {image_url} | {response.status} | {len(image)}')
     client.HTTPConnection.close(conn)
     return image
 
 def get(url):
     conn = client.HTTPConnection(SERVER_HOST, SERVER_PORT)
-    conn.request('GET', SERVER_BASE_URL + url)
+    conn.request('GET', SERVER_BASE_URL + url, headers={"Content-Type": "application/json"})
     response = conn.getresponse()
+    # client.HTTPConnection.close(conn)
+    data = response.read().decode("utf-8")
+    print(f'| GET | {url} | {response.status} | {data}')
+    if response.status != 200:
+        return {
+            "code": response.status,
+            "message": data
+        }
     py_response = {
         "code": response.status,
-        "data": json.loads(response.read().decode("utf-8"))
+        "data": json.loads(data)
     }
-    client.HTTPConnection.close(conn)
-    # print(f'| GET | {url} | {py_response}')
     return py_response
 
 def post(url, data):
@@ -30,34 +36,49 @@ def post(url, data):
     data_bytes = bytes(json.dumps(data), encoding="utf-8")
     conn.request('POST', SERVER_BASE_URL + url, data_bytes, headers={"Content-Type": "application/json"})
     response = conn.getresponse()
+    print(f'| POST | {url} | {response.status} | {data}')
+    recv_data = response.read().decode("utf-8")
+    if response.status != 200:
+        return {
+            "code": response.status,
+            "message": recv_data
+        }
     py_response = {
         "code": response.status,
-        "data": json.loads(response.read().decode("utf-8"))
+        "data": json.loads(recv_data)
     }
-    client.HTTPConnection.close(conn)
-    # print(f'| POST | {url} | {py_response}')
     return py_response
 
 def delete(url):
     conn = client.HTTPConnection(SERVER_HOST, SERVER_PORT)
     conn.request('DELETE', SERVER_BASE_URL + url)
     response = conn.getresponse()
+    data = response.read().decode("utf-8")
+    print(f'| DELETE | {url} | {response.status} | {data}')
+    if response.status != 200:
+        return {
+            "code": response.status,
+            "message": data
+        }
     py_response = {
         "code": response.status,
-        "data": json.loads(response.read().decode("utf-8"))
+        "data": json.loads(data)
     }
-    client.HTTPConnection.close(conn)
-    # print(f'| DELETE | {url} | {py_response}')
     return py_response
 
 def put(url):
     conn = client.HTTPConnection(SERVER_HOST, SERVER_PORT)
     conn.request('PUT', SERVER_BASE_URL + url)
     response = conn.getresponse()
+    data = response.read().decode("utf-8")
+    print(f'| PUT | {url} | {response.status} | {data}')
+    if response.status != 200:
+        return {
+            "code": response.status,
+            "message": data
+        }
     py_response = {
         "code": response.status,
-        "data": json.loads(response.read().decode("utf-8"))
+        "data": json.loads(data)
     }
-    client.HTTPConnection.close(conn)
-    # print(f'| PUT | {url} | {py_response}')
     return py_response

@@ -57,9 +57,11 @@ class MenuBar(QMenuBar):
             self.menuList["user"].addAction("个人信息", self.userPage)
             self.menuList["user"].addAction("退出登录", self.user.logout)
             if self.user.is_admin():
-                self.menuList["admin"] = self.addAction("后台管理", self.adminPage)
+                if "admin" not in self.menuList:
+                    self.menuList["admin"] = self.addAction("后台管理", self.adminPage)
             else:
                 if "admin" in self.menuList:
+                    self.menuList["admin"].clear()
                     self.menuList["admin"].deleteLater()
                     del self.menuList["admin"]
                     self.update()

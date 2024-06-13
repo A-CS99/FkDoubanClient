@@ -15,9 +15,9 @@ demo_movie = {
     "starring": "xxx",
     "type": "xx",
     "country": "xx",
-    "release_date": "xxxx-xx-xx",
+    "releaseDate": "xxxx-xx-xx",
     "rating": 0,
-    "comments_user": 99999,
+    "commentsUser": 99999,
     "coverUrl": "https://img3.doubanio.com/view/photo/s_ratio_poster/public/p480747492.webp"
 }
 
@@ -37,7 +37,7 @@ class CoverLabel(QLabel):
         self.setFixedHeight(height)
         img_path = quote(img_path)
         if not img_path.startswith("http"):
-            img_path = f'http://{SERVER_HOST}:{SERVER_PORT}{SERVER_BASE_URL}{img_path}'
+            img_path = f'http://{SERVER_HOST}:{SERVER_PORT}{SERVER_BASE_URL}/data{img_path}'
         image = get_image(img_path)
         pixmap = QPixmap()
         pixmap.loadFromData(image)
@@ -123,9 +123,9 @@ class InfoWidget(QWidget):
         name.setStyleSheet('font-size: 16px; font-weight: bold; margin-bottom: 10px;')
         director = ElidedLabel(f"导演: {movie['director']}", 200)
         starring = ElidedLabel(f"主演: {movie['starring']}", 200)
-        release_country_type = ElidedLabel(f"{movie['release_date'][:4]} / {movie['country']} / {movie['type']}", 200)
-        rating = RatingWidget(movie['rating'])
-        comments_user = ElidedLabel(f"{movie['comments_user']}人参与评价", 200)
+        release_country_type = ElidedLabel(f"{movie['releaseDate'][:4]} / {movie['country']} / {movie['type']}", 200)
+        rating = RatingWidget(float(movie['rating']))
+        comments_user = ElidedLabel(f"{int(movie['commentsUser'])}人参与评价", 200)
 
         layout.addWidget(name)
         layout.addWidget(director)
@@ -143,9 +143,9 @@ class InfoWidget(QWidget):
             "starring": movie["starring"],
             "type": movie["type"].replace("/", " "),
             "country": movie["country"],
-            "release_date": movie["release_date"],
-            "rating": movie["rating"],
-            "comments_user": movie["comments_user"]
+            "releaseDate": movie["releaseDate"],
+            "rating": float(movie["rating"]),
+            "commentsUser": int(movie["commentsUser"])
         }
 
 class CardWidget(QWidget):
@@ -156,7 +156,7 @@ class CardWidget(QWidget):
         self.movie = movie
         layout = QHBoxLayout()
 
-        rank = RankLabel(movie["rank"])
+        rank = RankLabel(int(movie["rank"][3:]))
         cover = CoverLabel(movie["coverUrl"], 100, 150)
         info = InfoWidget(movie)
 
@@ -175,6 +175,7 @@ class CardWidget(QWidget):
 class DetailWidget(QWidget):
     def __init__(self, movie):
         super().__init__()
+        self.setFixedWidth(400)
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
         layout.setSpacing(10)
@@ -187,9 +188,9 @@ class DetailWidget(QWidget):
         type = QLabel(f"类型: {movie['type']}")
         country = QLabel(f"制片国家/地区: {movie['country']}")
         language = QLabel(f"语言: {movie['language']}")
-        release_date = QLabel(f"上映日期: {movie['release_date']}")
-        run_time = QLabel(f"片长: {movie['run_time']}分钟")
-        imdb_href = QLabel(f"IMDb: {movie['imdb_href']}")
+        release_date = QLabel(f"上映日期: {movie['releaseDate']}")
+        run_time = QLabel(f"片长: {movie['runTime']}")
+        imdbHref = QLabel(f"IMDb: {movie['imdbHref']}")
         
         layout.addWidget(name)
         layout.addWidget(director)
@@ -200,24 +201,24 @@ class DetailWidget(QWidget):
         layout.addWidget(language)
         layout.addWidget(release_date)
         layout.addWidget(run_time)
-        layout.addWidget(imdb_href)
+        layout.addWidget(imdbHref)
 
         self.setLayout(layout)
 
 class SideRatingWidget(QWidget):
-    def __init__(self, rating, comments_user, star_ratio):
+    def __init__(self, rating, commentsUser, starRatio):
         super().__init__()
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
         layout.setSpacing(10)
 
         rating_widget = RatingWidget(rating)
-        comments_user_label = QLabel(f"{comments_user}人参与评价")
-        comments_user_label.setStyleSheet('font-size: 12px;')
+        commentsUser_label = QLabel(f"{commentsUser}人参与评价")
+        commentsUser_label.setStyleSheet('font-size: 12px;')
         # 绘制横向柱状图
         zh_font = fm.FontProperties(fname='src/assets/SIMHEI.ttf')
         x = ['5星', '4星', '3星', '2星', '1星']
-        y = star_ratio
+        y = list(map(float, starRatio))
         fig = plt.figure(figsize=(4, 2))
         ax = fig.add_subplot(111)
         bars = ax.barh(x, y, color='#ffac2d')
@@ -232,7 +233,7 @@ class SideRatingWidget(QWidget):
         canvas = FigureCanvas(fig)
 
         layout.addWidget(rating_widget)
-        layout.addWidget(comments_user_label)
+        layout.addWidget(commentsUser_label)
         layout.addWidget(canvas)
 
         self.setLayout(layout)
@@ -254,7 +255,7 @@ class MovieDialog(QDialog):
 
         cover = CoverLabel(movie["coverUrl"], 200, 300)
         detail = DetailWidget(movie)
-        rating = SideRatingWidget(movie["rating"], movie["comments_user"], movie["star_ratio"])
+        rating = SideRatingWidget(float(movie["rating"]), int(movie["commentsUser"]), movie["starRatio"])
 
         movie_layout.addWidget(cover)
         movie_layout.addWidget(detail)

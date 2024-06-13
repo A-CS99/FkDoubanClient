@@ -117,7 +117,7 @@ class ContentWidget(QWidget):
         list_widget.setLayout(list_layout)
         self.scroll_area.setWidget(list_widget)
 
-        self.page = 1
+        self.page = 0
         self.load_more()
         self.scroll_area.verticalScrollBar().valueChanged.connect(self.onScroll)
 
@@ -154,7 +154,7 @@ class ContentWidget(QWidget):
             self.search_hide()
             return
         self.is_searching = True
-        self.page = 1
+        self.page = 0
         self.scroll_area.takeWidget()
         list_widget = QWidget()
         list_layout = QVBoxLayout()
@@ -168,7 +168,7 @@ class ContentWidget(QWidget):
 
     def search_hide(self):
         self.is_searching = False
-        self.page = 1
+        self.page = 0
         self.scroll_area.takeWidget()
         list_widget = QWidget()
         list_layout = QVBoxLayout()
