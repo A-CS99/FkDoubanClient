@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMainWindow
 from components import MenuBar
-from config import SCREEN_SIZE
+from config import SCREEN_SIZE, PROJECT_NAME
 from store import User
 from utils import router
 from pages import IndexWidget, LoginWidget, SignupWidget, InfoWidget, RenameWidget, RePwdWidget, ManageWidget
@@ -12,7 +12,7 @@ class MainWindow(QMainWindow):
         self.resize(SCREEN_SIZE["width"], SCREEN_SIZE["height"])
         self.menuBar = MenuBar()
         self.setMenuBar(self.menuBar)
-        self.setWindowTitle("Python课设-影评管理系统")
+        self.setWindowTitle(PROJECT_NAME)
         self.setStyleSheet("background-color: #fff;")
         router.bind_routes({
             '/': IndexWidget,
